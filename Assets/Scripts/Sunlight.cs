@@ -17,10 +17,12 @@ public class Sunlight : MonoBehaviour
 
     public LayerMask reflection;
 
+    public EnemyController enemyref;
     // Start is called before the first frame update
     void Start()
     {
         lightRenderer = GetComponent<LineRenderer>();
+        enemyref = GameObject.FindAnyObjectByType<EnemyController>();
     }
 
     // Update is called once per frame
@@ -31,30 +33,54 @@ public class Sunlight : MonoBehaviour
 
     public void NormalState()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.up, lightDistance, reflection);
-        Debug.DrawRay(transform.position, -transform.up * lightDistance, Color.green);
-        lightRenderer.SetPosition(0, transform.position);
-        if (hit)
-        { 
-            dirLight = Vector3.Reflect(transform.position, hit.normal);
-            Debug.DrawRay(hit.point, dirLight, Color.green);
-
-            lightRenderer.positionCount = 3;
-            lightRenderer.SetPosition(1, hit.point);
-            Vector3 continuePos = (dirLight.normalized * lightDistance) - dirLight;
-            lightRenderer.SetPosition(2, continuePos);
-
-
-            Debug.Log("Reflecting");
-        }
-        else
+        Vector2 RayStart = transform.position;
+        Vector2 RayDir = -transform.up;
+        float DistanceRemaining = lightDistance;
+        List<Vector3> linePoints = new List<Vector3>(); 
+        for(int i=0; i<numberReflections; i++)
         {
-            Debug.Log("there's nothing");
-            Vector3 DownPos = -transform.up*lightDistance;
-            lightRenderer.positionCount = 2;
-            lightRenderer.SetPosition(1, DownPos);
+            RaycastHit2D hit = Physics2D.Raycast(RayStart, RayDir, DistanceRemaining, reflection);
+            
+            linePoints.Add(RayStart);
+            if (hit)
+            {
+                if (hit.transform.tag == "Enemy")
+                {
+                    enemyref.detectEnemyDeath(hit.transform.gameObject);
+                    linePoints.Add(RayStart + (RayDir * DistanceRemaining));
+                    Debug.Log("HitEnemy");
+                    break;
+                }
+                else if(hit.transform.tag == "Ground")
+                {
+                    linePoints.Add(hit.point);
+                    break;
+                }
+                else
+                {
+                    RayDir = Vector3.Reflect(RayDir, hit.normal);
+                    Debug.DrawLine(RayStart, hit.point, Color.green);
+                    DistanceRemaining -= hit.distance;
+                    RayStart = hit.point + (RayDir * 0.02f);
 
+
+
+                    Debug.Log("Reflecting");
+                }
+
+            }
+            else
+            {
+                Debug.Log("there's nothing");
+
+                linePoints.Add(RayStart + (RayDir * DistanceRemaining));
+                break;
+
+            }
         }
+        lightRenderer.positionCount = linePoints.Count;
+        lightRenderer.SetPositions(linePoints.ToArray());
+       
     }
     // gotta find a way to make this more modular...incorporate the current reflects int without it counting the same raycast again.
     //the loop idea sounds good...that way the light can reflect off multiple objects...when it hits the maximum amount of items, it breaks out of the loop
