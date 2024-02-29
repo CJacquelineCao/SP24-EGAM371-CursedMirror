@@ -15,6 +15,7 @@ public class EnemyController : MonoBehaviour
         public Vector3 position;
         public float Spawnspeed;
         public float initaldelay;
+        public PatrolPointsData patrolPoints;
     }
 
 
@@ -49,6 +50,7 @@ public class EnemyController : MonoBehaviour
                         yield return new WaitForSeconds(EnemyList[i].initaldelay);
                         Debug.Log("Spawn 1 Enemy");
                         EnemyList[i].EnemyRef = Instantiate(Database.AllEnemyDB[e].enemyPrefab, EnemyList[i].position, Quaternion.identity);
+                        EnemyList[i].EnemyRef.GetComponent<GenericEnemy>().patrolPointsData = EnemyList[i].patrolPoints;
                         //EnemyList[i].EnemyRef.transform.localScale = new Vector3(EnemyList[i].EnemyRef.transform.localScale.x, EnemyList[i].EnemyRef.transform.localScale.y, EnemyList[i].EnemyRef.transform.localScale.z);
                     }
                 }
@@ -76,7 +78,7 @@ public class EnemyController : MonoBehaviour
             {
                 if(EnemyList[i].ID == 0)
                 {
-                    EnemyList[i].EnemyRef.GetComponent<Horse>().SetState(Horse.AiState.Die);
+                    EnemyList[i].EnemyRef.GetComponent<GenericEnemy>().SetState(GenericEnemy.AiState.Die);
                 }
 
                 

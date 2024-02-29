@@ -56,6 +56,12 @@ public class Sunlight : MonoBehaviour
                     linePoints.Add(hit.point);
                     break;
                 }
+                else if(hit.transform.tag == "Lock")
+                {
+                    hit.transform.gameObject.GetComponent<SunLock>().Unlock();
+                    linePoints.Add(hit.point);
+                    break;
+                }
                 else
                 {
                     RayDir = Vector3.Reflect(RayDir, hit.normal);

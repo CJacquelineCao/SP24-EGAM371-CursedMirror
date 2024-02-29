@@ -10,13 +10,33 @@ public class PlayerController : MonoBehaviour
     public int movespeed;
     public Transform Mirror;
 
+    public Sprite MirrorBack;
+    public Sprite MirrorFront;
+    public Sprite MirrorBroken;
+
+    public bool MirrorBroke;
     public GameObject[] Hearts;
     public int life;
     public bool isRight;
+
+    public float Tstrength;
+
+    public GameObject ShardPrefab;
+    public GameObject currentShard;
+
+    public float holdTime;
+    public float increaseInterval;
+
+    public int originalLayer;
+
+    Vector2 initialPosition;
+    public float maxDistance;
+
+    public bool MirrorOut;
     // Start is called before the first frame update
     void Start()
     {
-
+        originalLayer = Mirror.gameObject.layer;
     }
 
     // Update is called once per frame
@@ -55,27 +75,121 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("collided");
+
         if (collision.transform.tag == "Enemy")
         {
-            life -= 1;
+            life -= collision.gameObject.GetComponent<GenericEnemy>().AttackPower;
         }
+
     }
+
+    
+    
 
     private void FixedUpdate()
     {
-        if(Input.GetMouseButton(1))
+        if(MirrorBroke == false)
         {
-            Mirror.gameObject.SetActive(true);
-            Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
-            Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat(Mirdir);
+            if (Input.GetMouseButton(1))
+            {
+                MirrorOut = true;
+                Mirror.gameObject.SetActive(true);
+                Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+                Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorFront;
+                Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+                Debug.Log(Mirdir);
+                Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat(Mirdir);
+
+            }
+            else if (Input.GetKey(KeyCode.Space))
+            {
+                MirrorOut = false;
+                Mirror.gameObject.SetActive(true);
+                Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+                Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+
+                if (Tstrength < maxDistance)
+                {
+                    Debug.Log("Charging...");
+                    holdTime += Time.deltaTime;
+                    if (holdTime >= increaseInterval)
+                    {
+                        Tstrength += 1;
+                        holdTime = 0f;
+                    }
+                }
+
+            }
+            else if (Input.GetKeyUp(KeyCode.Space))
+            {
+                throwMirror();
+
+            }
+            else
+            {
+                if(Mirror.gameObject.transform.parent == gameObject.transform)
+                {
+                    MirrorOut = false;
+                    Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorBack;
+                    Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+                }
+
+                //Mirror.gameObject.SetActive(false);
+
+
+            }
 
         }
         else
         {
-            Mirror.gameObject.SetActive(false);
-        }
+            Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorBroken;
+            MirrorOut = false;
+            if(GameObject.FindObjectOfType<Shatter>() == null)
+            {
+                currentShard = Instantiate(ShardPrefab, Mirror.gameObject.transform.position, Quaternion.identity);
+            }
+            else
+            {
+            }
 
+        }
+      
+
+    }
+
+    public void throwMirror()
+    {
+        initialPosition = Mirror.position;
+        Vector2 Throwdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+        Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+        ChangeMirrorLayer();
+        Mirror.gameObject.GetComponent<Rigidbody2D>().AddForce(Throwdir * 100, ForceMode2D.Impulse);
+        Mirror.gameObject.transform.parent = null;
+
+        holdTime = 0f;
+        //find a way to switch it back to kinematic but also make it stop movingit
+        StartCoroutine(CheckDistance());
+    }
+    IEnumerator CheckDistance()
+    {
+        yield return new WaitForSeconds(0.5f); 
+
+        float distanceTraveled = Vector2.Distance(initialPosition, Mirror.position);
+       
+
+        if (distanceTraveled >= Tstrength)
+        {
+            Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+            Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            Tstrength = 0;
+
+        }
+    }
+    void ChangeMirrorLayer()
+    {
+
+        int temporaryLayer = LayerMask.NameToLayer("Shard");
+        Mirror.gameObject.layer = temporaryLayer;
     }
     public static float GetAngleFromVectorFloat(Vector3 dir)
     {

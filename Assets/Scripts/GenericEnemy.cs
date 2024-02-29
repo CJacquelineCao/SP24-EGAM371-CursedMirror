@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Horse : MonoBehaviour
+public class GenericEnemy : MonoBehaviour
 {
     public GameObject Player;
     public AiState currentState;
-    public List<Vector3> patrolPointList = new List<Vector3>();
+    public int AttackPower;
+
     public int patrolPointIndex = 0;
+    public PatrolPointsData patrolPointsData;
 
     public float remainingDistance;
     public float movespeed;
@@ -22,6 +24,11 @@ public class Horse : MonoBehaviour
     public float t;
 
     public bool CountDownStarted;
+
+    public SpriteRenderer enemySprite;
+    public Sprite PatrolSprite;
+    public Sprite ChaseSprite;
+    public Sprite DeadSprite;
     public enum AiState
     {
         Patrol,
@@ -101,14 +108,15 @@ public class Horse : MonoBehaviour
 
     public void PatrolRoutine()
     {
-        Vector3 pos = Vector3.MoveTowards(transform.position, patrolPointList[patrolPointIndex], movespeed * Time.deltaTime);
+        enemySprite.GetComponent<SpriteRenderer>().sprite = PatrolSprite;
+        Vector3 pos = Vector3.MoveTowards(transform.position, patrolPointsData.points[patrolPointIndex], movespeed * Time.deltaTime);
         rb.MovePosition(pos);
-        remainingDistance = Vector3.Distance(gameObject.transform.position, patrolPointList[patrolPointIndex]);
-        transform.right = (patrolPointList[patrolPointIndex] - transform.position).normalized *-1;
+        remainingDistance = Vector3.Distance(gameObject.transform.position, patrolPointsData.points[patrolPointIndex]);
+        transform.right = (patrolPointsData.points[patrolPointIndex] - transform.position).normalized *-1;
         if (remainingDistance < 0.5f)
         {
             patrolPointIndex++;
-            if (patrolPointIndex >= patrolPointList.Count)
+            if (patrolPointIndex >= patrolPointsData.points.Length)
             {
                 patrolPointIndex = 0;
             }
@@ -118,6 +126,7 @@ public class Horse : MonoBehaviour
 
     public void ChaseRoutine()
     {
+        enemySprite.GetComponent<SpriteRenderer>().sprite = ChaseSprite;
         Vector3 pos = Vector3.MoveTowards(transform.position, Player.transform.position, movespeed * Time.deltaTime);
         //look at
         rb.MovePosition(pos);
@@ -126,6 +135,7 @@ public class Horse : MonoBehaviour
 
     public void DieRoutine()
     {
+        enemySprite.GetComponent<SpriteRenderer>().sprite = DeadSprite;
         Destroy(gameObject, 1f);
     }
 }

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Enemy
   - Ground
+  - Mirror
+  - Lock
   layers:
   - Default
   - TransparentFX
@@ -20,7 +22,7 @@ TagManager:
   - Enemy
   - Ignore
   - Mirror
-  - 
+  - Shard
   - 
   - 
   - 

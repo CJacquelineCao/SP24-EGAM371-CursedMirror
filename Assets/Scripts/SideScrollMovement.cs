@@ -9,15 +9,15 @@ public class SideScrollMovement : MonoBehaviour
     public Sprite regular;
     public int jumpForce;
     private Rigidbody2D Rb;
+    public Transform Mirror;
 
     public bool isMoving;
     public bool onGround;
 
-    public float glidefallSpeed;
-
     public Animator animationcontroller;
     public bool isRight;
-
+    public GameObject[] Hearts;
+    public int life;
 
     // Start is called before the first frame update
     void Start()
@@ -73,21 +73,85 @@ public class SideScrollMovement : MonoBehaviour
                 //animationcontroller.SetBool("Walking", false);
 
             }
+
          
         }
+        if (life < 1)
+        {
+            Hearts[0].gameObject.SetActive(false);
 
-        if (Input.GetAxis("Horizontal") < 0 && isRight == true)
-        {
-            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().flipX = true;
-            isRight = false;
+
         }
-        else if (Input.GetAxis("Horizontal") > 0 && isRight == false)
+        else if (life < 2)
         {
-            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().flipX = false;
-            isRight = true;
+            Hearts[1].gameObject.SetActive(false);
         }
+        else if (life < 3)
+        {
+            Hearts[2].gameObject.SetActive(false);
+
+        }
+
+
 
     }
+
+    private void FixedUpdate()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            Mirror.gameObject.SetActive(true);
+            Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+            Debug.Log(Mirdir);
+            Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat1(Mirdir);
+            //Mirror.GetComponent<Rigidbody2D>().MoveRotation(GetAngleFromVectorFloat1(Mirdir));
+
+        }
+        else
+        {
+            Mirror.gameObject.SetActive(false);
+        }
+    }
+    public static float GetAngleFromVectorFloat1(Vector3 dir)
+    {
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (n < 0)
+        {
+            n += 360;
+        }
+
+        return n;
+
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("collided");
+        if (collision.transform.tag == "Enemy")
+        {
+            life -= 1;
+        }
+        if (collision.transform.tag == "Ground")
+        {
+            onGround = true;
+        }
+    }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Ground")
+        {
+            onGround = true;
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Ground")
+        {
+            onGround = false;
+        }
+    }
+
+
     void Walk(Vector2 dir)
     {
         Rb.velocity = new Vector2(dir.x * speed, Rb.velocity.y);
@@ -95,25 +159,5 @@ public class SideScrollMovement : MonoBehaviour
         isMoving = Mathf.Abs(Rb.velocity.x) > Mathf.Epsilon;
 
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Ground")
-        {
-            onGround = true;
-        }
-    }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.tag == "Ground")
-        {
-            onGround = true;
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "Ground")
-        {
-            onGround = false;
-        }
-    }
+
 }
