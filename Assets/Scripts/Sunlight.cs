@@ -62,18 +62,30 @@ public class Sunlight : MonoBehaviour
                     linePoints.Add(hit.point);
                     break;
                 }
+                else if(hit.transform.tag == "Mirror")
+                {
+                    RayDir = hit.transform.right;
+                    Debug.DrawLine(RayStart, hit.point, Color.green);
+                    DistanceRemaining -= hit.distance;
+                    RayStart = hit.point + (RayDir * 0.5f);
+                }
                 else
                 {
                     RayDir = Vector3.Reflect(RayDir, hit.normal);
                     Debug.DrawLine(RayStart, hit.point, Color.green);
                     DistanceRemaining -= hit.distance;
-                    RayStart = hit.point + (RayDir * 0.02f);
+                    RayStart = hit.point + (hit.normal * 0.01f);
 
 
 
-                    Debug.Log("Reflecting");
+                    Debug.Log("Reflecting off of" + hit.transform.name, hit.transform);
+                    
                 }
-
+                if(DistanceRemaining < .7)
+                {
+                    linePoints.Add(hit.point);
+                    break;
+                }
             }
             else
             {

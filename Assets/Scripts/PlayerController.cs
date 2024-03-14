@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class PlayerController : MonoBehaviour
@@ -33,10 +34,20 @@ public class PlayerController : MonoBehaviour
     public float maxDistance;
 
     public bool MirrorOut;
+    public LineRenderer aimLine;
+    public float lineLength;
+    public bool canThrow;
+    public GameObject strengthSlider;
+    public bool canPickUp;
+
     // Start is called before the first frame update
     void Start()
     {
         originalLayer = Mirror.gameObject.layer;
+
+
+        // Disable the Line Renderer at the start
+        aimLine.enabled = false;
     }
 
     // Update is called once per frame
@@ -80,6 +91,11 @@ public class PlayerController : MonoBehaviour
         {
             life -= collision.gameObject.GetComponent<GenericEnemy>().AttackPower;
         }
+        else if(collision.transform.tag == "Bullet")
+        {
+            life -= 1;
+            Destroy(collision.gameObject); // Destroy the bullet on hitting the player
+        }
 
     }
 
@@ -92,21 +108,38 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetMouseButton(1))
             {
-                MirrorOut = true;
-                Mirror.gameObject.SetActive(true);
-                Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = true;
-                Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorFront;
-                Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
-                Debug.Log(Mirdir);
-                Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat(Mirdir);
+                if(canThrow == true)
+                {
+                    MirrorOut = true;
+                    Mirror.gameObject.SetActive(true);
+                    Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorFront;
+                    Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+                    Debug.Log(Mirdir);
+                    Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat(Mirdir);
+                }
+
 
             }
-            else if (Input.GetKey(KeyCode.Space))
+            else if (Input.GetKey(KeyCode.Space) && canThrow == true)
             {
                 MirrorOut = false;
+                strengthSlider.SetActive(true);
+                aimLine.enabled = true;
                 Mirror.gameObject.SetActive(true);
-                Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+                Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
                 Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+
+                Vector3 direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+
+             
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                aimLine.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+                
+                aimLine.SetPosition(0, gameObject.transform.position);
+                aimLine.SetPosition(1, gameObject.transform.position + direction * lineLength);
+
+
 
                 if (Tstrength < maxDistance)
                 {
@@ -116,12 +149,14 @@ public class PlayerController : MonoBehaviour
                     {
                         Tstrength += 1;
                         holdTime = 0f;
+                        strengthSlider.GetComponent<Slider>().value = Tstrength / maxDistance;
                     }
                 }
 
             }
             else if (Input.GetKeyUp(KeyCode.Space))
             {
+                aimLine.enabled = false;
                 throwMirror();
 
             }
@@ -131,7 +166,7 @@ public class PlayerController : MonoBehaviour
                 {
                     MirrorOut = false;
                     Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorBack;
-                    Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+                    Mirror.gameObject.GetComponent<Collider2D>().enabled = false;
                 }
 
                 //Mirror.gameObject.SetActive(false);
@@ -159,14 +194,17 @@ public class PlayerController : MonoBehaviour
 
     public void throwMirror()
     {
+        canPickUp = false;
         initialPosition = Mirror.position;
         Vector2 Throwdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
-        Mirror.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+        Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
         ChangeMirrorLayer();
-        Mirror.gameObject.GetComponent<Rigidbody2D>().AddForce(Throwdir * 100, ForceMode2D.Impulse);
+        Mirror.gameObject.GetComponent<Rigidbody2D>().AddForce(Throwdir * 30, ForceMode2D.Impulse);
         Mirror.gameObject.transform.parent = null;
 
         holdTime = 0f;
+        canThrow = false;
+        strengthSlider.SetActive(false);
         //find a way to switch it back to kinematic but also make it stop movingit
         StartCoroutine(CheckDistance());
     }
@@ -181,6 +219,8 @@ public class PlayerController : MonoBehaviour
         {
             Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
             Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
+            canPickUp = true;
             Tstrength = 0;
 
         }
