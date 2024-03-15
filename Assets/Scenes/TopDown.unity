@@ -9058,8 +9058,9 @@ MonoBehaviour:
   loopActive: 0
   reflection:
     serializedVersion: 2
-    m_Bits: 5504
+    m_Bits: 21888
   enemyref: {fileID: 0}
+  playerref: {fileID: 0}
 --- !u!50 &353393381
 Rigidbody2D:
   serializedVersion: 4
@@ -9462,8 +9463,9 @@ MonoBehaviour:
   loopActive: 0
   reflection:
     serializedVersion: 2
-    m_Bits: 5504
+    m_Bits: 6016
   enemyref: {fileID: 0}
+  playerref: {fileID: 0}
 --- !u!120 &624568428
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -9767,6 +9769,12 @@ MonoBehaviour:
   canThrow: 1
   strengthSlider: {fileID: 2127085872}
   canPickUp: 0
+  isHoldingRightMouseButton: 0
+  chargeTime: 0
+  maxChargeTime: 1
+  fireRate: 0.5
+  lightPrefab: {fileID: 2867888821291956671, guid: 34e952db53991874e934dc5cbfd28f56, type: 3}
+  underLight: 0
 --- !u!50 &633082930
 Rigidbody2D:
   serializedVersion: 4

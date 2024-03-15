@@ -18,10 +18,13 @@ public class Sunlight : MonoBehaviour
     public LayerMask reflection;
 
     public EnemyController enemyref;
+    public PlayerController playerref;
+
     // Start is called before the first frame update
     void Start()
     {
         lightRenderer = GetComponent<LineRenderer>();
+        playerref = GameObject.FindAnyObjectByType<PlayerController>();
         enemyref = GameObject.FindAnyObjectByType<EnemyController>();
     }
 
@@ -56,6 +59,7 @@ public class Sunlight : MonoBehaviour
                     linePoints.Add(hit.point);
                     break;
                 }
+
                 else if(hit.transform.tag == "Lock")
                 {
                     hit.transform.gameObject.GetComponent<SunLock>().Unlock();
@@ -64,10 +68,22 @@ public class Sunlight : MonoBehaviour
                 }
                 else if(hit.transform.tag == "Mirror")
                 {
-                    RayDir = hit.transform.right;
-                    Debug.DrawLine(RayStart, hit.point, Color.green);
-                    DistanceRemaining -= hit.distance;
-                    RayStart = hit.point + (RayDir * 0.5f);
+                    if(hit.transform.gameObject.layer == 12)
+                    {
+                        RayDir = hit.transform.right;
+                        Debug.DrawLine(RayStart, hit.point, Color.green);
+                        DistanceRemaining -= hit.distance;
+                        RayStart = hit.point + (RayDir * 0.5f);
+
+                    }
+                    else
+                    {
+                        playerref.underLight = true; //how do i set this to false?
+
+                        linePoints.Add(hit.point);
+                        break;
+                    }
+
                 }
                 else
                 {
@@ -90,7 +106,7 @@ public class Sunlight : MonoBehaviour
             else
             {
                 Debug.Log("there's nothing");
-
+                //playerref.underLight = false;
                 linePoints.Add(RayStart + (RayDir * DistanceRemaining));
                 break;
 
@@ -98,7 +114,7 @@ public class Sunlight : MonoBehaviour
         }
         lightRenderer.positionCount = linePoints.Count;
         lightRenderer.SetPositions(linePoints.ToArray());
-       
+
     }
     // gotta find a way to make this more modular...incorporate the current reflects int without it counting the same raycast again.
     //the loop idea sounds good...that way the light can reflect off multiple objects...when it hits the maximum amount of items, it breaks out of the loop

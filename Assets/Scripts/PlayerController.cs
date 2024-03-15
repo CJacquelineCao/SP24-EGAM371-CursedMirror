@@ -40,11 +40,19 @@ public class PlayerController : MonoBehaviour
     public GameObject strengthSlider;
     public bool canPickUp;
 
+    public bool isHoldingRightMouseButton = false;
+    public float chargeTime = 0f;
+    public float maxChargeTime = 1.5f;
+    public float fireRate = 0.5f;       // Cooldown time between shots
+    private float nextFireTime;         // Time until the next shot can be fired
+    public GameObject lightPrefab;
+
+    public bool underLight;
     // Start is called before the first frame update
     void Start()
     {
         originalLayer = Mirror.gameObject.layer;
-
+        nextFireTime = 0f;
 
         // Disable the Line Renderer at the start
         aimLine.enabled = false;
@@ -108,19 +116,37 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetMouseButton(1))
             {
-                if(canThrow == true)
+                isHoldingRightMouseButton = true;
+                ChangeMirrorLayer("Short");
+                if (canThrow == true)
                 {
                     MirrorOut = true;
-                    Mirror.gameObject.SetActive(true);
                     Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
                     Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorFront;
-                    Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
-                    Debug.Log(Mirdir);
-                    Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat(Mirdir);
+                    chargeTime += Time.deltaTime;
+                    chargeTime = Mathf.Clamp(chargeTime, 0f, maxChargeTime);
+
                 }
-
-
+                if(chargeTime >= maxChargeTime)
+                {
+                    ToggleReflectiveMode();
+                }
             }
+            else if (Input.GetMouseButtonUp(1))
+            {
+                isHoldingRightMouseButton = false;
+                if (chargeTime < maxChargeTime && Time.time >= nextFireTime)
+                { 
+                    if(underLight == true)
+                    {
+                        ShootProjectile();
+                        nextFireTime = Time.time + fireRate;
+                    }
+
+                }
+                chargeTime = 0;
+            }
+
             else if (Input.GetKey(KeyCode.Space) && canThrow == true)
             {
                 MirrorOut = false;
@@ -174,7 +200,9 @@ public class PlayerController : MonoBehaviour
 
             }
 
+
         }
+       
         else
         {
             Mirror.gameObject.GetComponent<SpriteRenderer>().sprite = MirrorBroken;
@@ -191,14 +219,28 @@ public class PlayerController : MonoBehaviour
       
 
     }
+    void ShootProjectile()
+    {
 
+        GameObject particle = Instantiate(lightPrefab, gameObject.transform.position, gameObject.transform.rotation);
+
+       
+    }
+    void ToggleReflectiveMode()
+    {
+
+        Vector2 Mirdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+        Debug.Log(Mirdir);
+        Mirror.GetComponent<Rigidbody2D>().rotation = GetAngleFromVectorFloat(Mirdir);
+        Mirror.gameObject.layer = originalLayer;
+    }
     public void throwMirror()
     {
         canPickUp = false;
         initialPosition = Mirror.position;
         Vector2 Throwdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
         Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
-        ChangeMirrorLayer();
+        ChangeMirrorLayer("Shard");
         Mirror.gameObject.GetComponent<Rigidbody2D>().AddForce(Throwdir * 30, ForceMode2D.Impulse);
         Mirror.gameObject.transform.parent = null;
 
@@ -225,10 +267,10 @@ public class PlayerController : MonoBehaviour
 
         }
     }
-    void ChangeMirrorLayer()
+    public void ChangeMirrorLayer(string name)
     {
 
-        int temporaryLayer = LayerMask.NameToLayer("Shard");
+        int temporaryLayer = LayerMask.NameToLayer(name);
         Mirror.gameObject.layer = temporaryLayer;
     }
     public static float GetAngleFromVectorFloat(Vector3 dir)

@@ -29,6 +29,7 @@ public class Hold : MonoBehaviour
                 {
                     Debug.Log("Reparenting Mirror...");
                     Mirror.gameObject.layer = Player.gameObject.GetComponent<PlayerController>().originalLayer;
+                    Player.gameObject.GetComponent<PlayerController>().ChangeMirrorLayer("Short");
                     Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
                     Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                     Mirror.gameObject.transform.SetParent(Player.transform);
@@ -45,10 +46,11 @@ public class Hold : MonoBehaviour
                 gameObject.GetComponent<BoxCollider2D>().enabled = false;
             }
         }
-        else
+        else if(collision.tag == "Ground")
         {
             Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             Player.gameObject.GetComponent<PlayerController>().canPickUp = true;
+            //it seems like... when its super short, it runs into issues??
         }
 
 
