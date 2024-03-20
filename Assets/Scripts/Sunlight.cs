@@ -66,23 +66,18 @@ public class Sunlight : MonoBehaviour
                     linePoints.Add(hit.point);
                     break;
                 }
+                else if(hit.transform.tag == "Rope")
+                {
+                    hit.transform.gameObject.GetComponent<Rope>().burn();
+                    linePoints.Add(hit.point);
+                    break;
+                }
                 else if(hit.transform.tag == "Mirror")
                 {
-                    if(hit.transform.gameObject.layer == 12)
-                    {
-                        RayDir = hit.transform.right;
-                        Debug.DrawLine(RayStart, hit.point, Color.green);
-                        DistanceRemaining -= hit.distance;
-                        RayStart = hit.point + (RayDir * 0.5f);
-
-                    }
-                    else
-                    {
-                        playerref.underLight = true; //how do i set this to false?
-
-                        linePoints.Add(hit.point);
-                        break;
-                    }
+                    RayDir = hit.transform.right;
+                    Debug.DrawLine(RayStart, hit.point, Color.green);
+                    DistanceRemaining -= hit.distance;
+                    RayStart = hit.point + (RayDir * 0.5f);
 
                 }
                 else

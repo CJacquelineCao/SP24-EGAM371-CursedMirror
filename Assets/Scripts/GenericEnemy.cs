@@ -33,6 +33,7 @@ public class GenericEnemy : MonoBehaviour
     {
         Patrol,
         Chase,
+        Special,
         Die
     }
     // Start is called before the first frame update
@@ -65,6 +66,8 @@ public class GenericEnemy : MonoBehaviour
             case AiState.Die:
                 DieRoutine();
                 break;
+            case AiState.Special:
+                break;
 
         }
         lineofSightCheck();
@@ -86,6 +89,10 @@ public class GenericEnemy : MonoBehaviour
             SetState(AiState.Patrol);
             CountDownStarted = false;
         }
+        if(remainingDistance >=30)
+        {
+            SetState(AiState.Die);
+        }
     }
     public void lineofSightCheck()
     {
@@ -96,7 +103,11 @@ public class GenericEnemy : MonoBehaviour
             CountDownStarted = false;
             Debug.Log("i see u");
             SetState(AiState.Chase);
-            
+            if (Player.GetComponent<PlayerController>().MirrorOut == true)
+            {
+                gameObject.GetComponent<GenericEnemy>().SetState(GenericEnemy.AiState.Special);
+            }
+
 
         }
         else

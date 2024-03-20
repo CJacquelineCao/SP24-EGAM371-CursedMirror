@@ -9,6 +9,7 @@ TagManager:
   - Mirror
   - Lock
   - Bullet
+  - Rope
   layers:
   - Default
   - TransparentFX
