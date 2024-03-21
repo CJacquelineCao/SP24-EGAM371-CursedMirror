@@ -28,26 +28,9 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            if(sideScrollRef.life <=0)
-            {
-                string currentSceneName = SceneManager.GetActiveScene().name;
-                SceneManager.LoadScene(currentSceneName);
-            }
         }
 
 
-        if(Input.GetKeyDown(KeyCode.B))
-        {
-
-            if(currentSceneNum == 0)
-            {
-                SceneManager.LoadScene(1);
-            }
-            else
-            {
-                SceneManager.LoadScene(0);
-            }
-        }
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
