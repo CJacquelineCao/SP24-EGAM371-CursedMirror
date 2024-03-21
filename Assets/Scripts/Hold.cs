@@ -46,12 +46,7 @@ public class Hold : MonoBehaviour
                 gameObject.GetComponent<BoxCollider2D>().enabled = false;
             }
         }
-        else if(collision.tag == "Ground")
-        {
-            Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            Player.gameObject.GetComponent<PlayerController>().canPickUp = true;
-            //it seems like... when its super short, it runs into issues??
-        }
+
 
 
     }

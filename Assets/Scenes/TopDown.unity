@@ -9370,10 +9370,11 @@ MonoBehaviour:
   maxDistance: 5
   MirrorOut: 0
   aimLine: {fileID: 1608059304}
-  lineLength: 10
+  lineLength: 2
   canThrow: 1
   strengthSlider: {fileID: 2127085872}
   canPickUp: 0
+  throwstrengthfactor: 10
 --- !u!50 &633082930
 Rigidbody2D:
   serializedVersion: 4

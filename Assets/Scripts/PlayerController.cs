@@ -40,6 +40,8 @@ public class PlayerController : MonoBehaviour
     public GameObject strengthSlider;
     public bool canPickUp;
 
+    public float throwstrengthfactor;
+
 
     // Start is called before the first frame update
     void Start()
@@ -129,14 +131,14 @@ public class PlayerController : MonoBehaviour
                 Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
                 Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
 
-                Vector3 direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
+                Vector3 direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position);
+                direction.z = 0;
 
-             
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                aimLine.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-                
+               // float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+               //aimLine.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+
                 aimLine.SetPosition(0, gameObject.transform.position);
-                aimLine.SetPosition(1, gameObject.transform.position + direction * lineLength);
+                aimLine.SetPosition(1, gameObject.transform.position + direction.normalized * lineLength*Tstrength);
 
 
 
@@ -155,6 +157,10 @@ public class PlayerController : MonoBehaviour
             }
             else if (Input.GetKeyUp(KeyCode.Space))
             {
+                if(Tstrength ==0)
+                {
+                    Tstrength = 1;
+                }
                 aimLine.enabled = false;
                 throwMirror();
 
@@ -199,7 +205,7 @@ public class PlayerController : MonoBehaviour
         Vector2 Throwdir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - Mirror.position).normalized;
         Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
         ChangeMirrorLayer("Shard");
-        Mirror.gameObject.GetComponent<Rigidbody2D>().AddForce(Throwdir * 30, ForceMode2D.Impulse);
+        Mirror.gameObject.GetComponent<Rigidbody2D>().AddForce(Throwdir.normalized * Tstrength * throwstrengthfactor, ForceMode2D.Impulse);
         Mirror.gameObject.transform.parent = null;
 
         holdTime = 0f;
@@ -214,16 +220,21 @@ public class PlayerController : MonoBehaviour
 
         float distanceTraveled = Vector2.Distance(initialPosition, Mirror.position);
        
-
-        if (distanceTraveled >= Tstrength)
+        while (canPickUp == false)
         {
-            Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
-            Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
-            canPickUp = true;
-            Tstrength = 0;
+            if (Mirror.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude < 0.5)
+            {
+                Mirror.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+                Mirror.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                Mirror.gameObject.GetComponent<Rigidbody2D>().angularVelocity = 0;
+                Mirror.gameObject.GetComponent<Collider2D>().enabled = true;
+                canPickUp = true;
+                Tstrength = 0;
 
+            }
+            yield return new WaitForEndOfFrame();
         }
+
     }
     public void ChangeMirrorLayer(string name)
     {
