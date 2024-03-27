@@ -42,11 +42,12 @@ public class PlayerController : MonoBehaviour
 
     public float throwstrengthfactor;
 
-
+    public bool canMove;
     // Start is called before the first frame update
     void Start()
     {
         originalLayer = Mirror.gameObject.layer;
+        canMove = true;
 
         // Disable the Line Renderer at the start
         aimLine.enabled = false;
@@ -55,8 +56,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Inputs();
-        move();
+        if (canMove == true)
+        {
+            Inputs();
+            move();
+        }
+ 
         if (life < 1)
         {
             Hearts[0].gameObject.SetActive(false);
@@ -72,6 +77,8 @@ public class PlayerController : MonoBehaviour
             Hearts[2].gameObject.SetActive(false);
 
         }
+ 
+        
         if (Input.GetAxis("Horizontal") < 0 && isRight == true)
         {
             transform.localScale = new Vector3(-1, 1, 1);
@@ -80,10 +87,13 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetAxis("Horizontal") > 0 && isRight == false)
         {
-            transform.localScale = new Vector3(1, 1, 1); 
+            transform.localScale = new Vector3(1, 1, 1);
             transform.GetChild(0).localScale = new Vector3(transform.GetChild(0).transform.localScale.x, transform.GetChild(0).transform.localScale.y, 1);
             isRight = true;
         }
+
+        
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -102,8 +112,6 @@ public class PlayerController : MonoBehaviour
     }
 
     
-    
-
     private void FixedUpdate()
     {
         if(MirrorBroke == false)
@@ -124,6 +132,7 @@ public class PlayerController : MonoBehaviour
 
             else if (Input.GetKey(KeyCode.Space) && canThrow == true)
             {
+                canMove = false;
                 MirrorOut = false;
                 strengthSlider.SetActive(true);
                 aimLine.enabled = true;
@@ -162,6 +171,7 @@ public class PlayerController : MonoBehaviour
                     Tstrength = 1;
                 }
                 aimLine.enabled = false;
+                canMove = true;
                 throwMirror();
 
             }

@@ -109,6 +109,7 @@ public class AngryBird : MonoBehaviour
     {
         RotateTowardsPlayer();
         DrawAimLine();
+        BirdRenderer.sprite = regularSprite;
         if (Time.time - lastShootTime > shootInterval)
         {
             // Shoot towards the player
@@ -214,11 +215,55 @@ public class AngryBird : MonoBehaviour
                 lineRenderer.enabled = true;
                 SetState(BirdState.Snipe);
             }
+            else
+            {
+                if(Mirror.transform.parent != player.gameObject.transform)
+                {
+                    SetState(BirdState.Provoke);
+                }
+                else
+                {
+                    SetState(BirdState.Snipe);
+                }
+            }
 
         }
         else
         {
-            
+           
+        }
+    }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.tag == "Player")
+        {
+            if(currentState != BirdState.Provoke)
+            {
+                isPatrolling = false;
+                lineRenderer.enabled = true;
+                SetState(BirdState.Snipe);
+            }
+            else
+            {
+                if (Mirror.transform.parent != player.gameObject.transform)
+                {
+                    SetState(BirdState.Provoke);
+                }
+                else
+                {
+                    SetState(BirdState.Snipe);
+                }
+            }
+        }
+        if (collision.tag == "Mirror")
+        {
+            if (player.GetComponent<PlayerController>().canThrow == false)
+            {
+                isPatrolling = false;
+                lineRenderer.enabled = false;
+                SetState(BirdState.Provoke);
+            }
+
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
