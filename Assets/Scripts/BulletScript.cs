@@ -27,6 +27,10 @@ public class BulletScript : MonoBehaviour
         {
             Destroy(gameObject); // Destroy the bullet upon collision with a wall
         }
+        else if(collision.gameObject.CompareTag("Respawn"))
+        {
+            Destroy(gameObject);
+        }
     }
     // Set the direction for the bullet to move
     public void SetDirection(Vector2 newDirection)

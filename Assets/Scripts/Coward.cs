@@ -8,6 +8,7 @@ public class Coward : MonoBehaviour
 
     public float runSpeed = 5f;
     public float runawayDistance = 10f;
+    public Sprite scared;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +26,7 @@ public class Coward : MonoBehaviour
 
     public void runAway()
     {
+        gameObject.GetComponent<SpriteRenderer>().sprite = scared;
         // Calculate direction away from the player
         Vector3 directionToPlayer = transform.position - Player.transform.position;
 
@@ -36,5 +38,15 @@ public class Coward : MonoBehaviour
 
         // Move towards the target position
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, runSpeed * Time.deltaTime);
+        if (directionToPlayer.x > 0)
+        {
+            // If the player is on the right side, flip the sprite to face left
+            gameObject.GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else
+        {
+            // If the player is on the left side, flip the sprite to face right
+            gameObject.GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
 }

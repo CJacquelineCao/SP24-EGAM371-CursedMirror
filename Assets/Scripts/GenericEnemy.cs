@@ -141,7 +141,7 @@ public class GenericEnemy : MonoBehaviour
         Vector3 pos = Vector3.MoveTowards(transform.position, Player.transform.position, movespeed * Time.deltaTime);
         //look at
         rb.MovePosition(pos);
-        transform.right = Player.transform.position - transform.position;
+        transform.right = (Player.transform.position - transform.position).normalized *-1;
     }
 
     public void DieRoutine()

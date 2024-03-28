@@ -16,7 +16,10 @@ public class Button : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(designatedObject == null)
+        {
+            Unlock();
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -27,6 +30,14 @@ public class Button : MonoBehaviour
                 Unlock();
             }
 
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision ==null)
+        {
+            Unlock();
         }
     }
     public void Unlock()
