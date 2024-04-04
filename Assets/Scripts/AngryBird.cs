@@ -30,6 +30,8 @@ public class AngryBird : MonoBehaviour
     public Sprite angrySprite;
 
     public SpriteRenderer BirdRenderer;
+
+    public LayerMask obstacleLayerMask;
     public enum BirdState
     {
         Guard,
@@ -162,10 +164,22 @@ public class AngryBird : MonoBehaviour
     {
         // Set the starting position of the line to the fire point
         lineRenderer.SetPosition(0, firePoint.position);
-
-        // Calculate the end position based on the fire point's rotation and a distance (adjust as needed)
         float lineLength = 10f;
-        Vector3 endPosition = firePoint.position + Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z) * Vector3.right * lineLength;
+        // Calculate the direction from the fire point towards the player
+        Vector3 directionToPlayer = (player.position - firePoint.position).normalized;
+
+        // Raycast to detect obstacles between the fire point and the player
+        RaycastHit2D hit = Physics2D.Raycast(firePoint.position, directionToPlayer, lineLength, obstacleLayerMask);
+
+        // Set the end position of the line
+        Vector3 endPosition = firePoint.position + directionToPlayer * lineLength;
+
+        if (hit.collider != null)
+        {
+            // If the raycast hits an obstacle, set the end position to the hit point
+            endPosition = hit.point;
+
+        }
 
         // Set the ending position of the line
         lineRenderer.SetPosition(1, endPosition);

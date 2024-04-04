@@ -6,6 +6,8 @@ public class Door : MonoBehaviour
 {
     public bool Locked;
     public GameObject collider;
+
+    public AudioSource doorunlockSound;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,9 +17,14 @@ public class Door : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Locked == false)
+        if (Locked == false)
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
+            gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            gameObject.GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
 
@@ -29,7 +36,13 @@ public class Door : MonoBehaviour
             {
                 collider.SetActive(false);
             }
+
         }
+        if (collision.tag == "Bullet")
+        {
+            Destroy(collision.gameObject);
+        }
+
 
     }
 }

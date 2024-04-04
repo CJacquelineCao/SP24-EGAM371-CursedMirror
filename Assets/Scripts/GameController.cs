@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
 {
     PlayerController playerref;
     SideScrollMovement sideScrollRef;
+
+    public int currentLevel;
     // Start is called before the first frame update
     void Start()
     {

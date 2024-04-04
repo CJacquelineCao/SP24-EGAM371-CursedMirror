@@ -237,6 +237,9 @@ MonoBehaviour:
   regularSprite: {fileID: 21300000, guid: 218fe1db4a5289245ada571aa29e6b76, type: 3}
   angrySprite: {fileID: 21300000, guid: 48bf35fcc8f395347927b25a90046f34, type: 3}
   BirdRenderer: {fileID: 2497592593476184942}
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 769
 --- !u!61 &2497592594796703534
 BoxCollider2D:
   m_ObjectHideFlags: 0

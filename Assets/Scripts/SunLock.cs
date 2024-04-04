@@ -19,5 +19,6 @@ public class SunLock : MonoBehaviour
     public void Unlock()
     {
         matchingDoor.Locked = false;
+        matchingDoor.doorunlockSound.Play();
     }
 }

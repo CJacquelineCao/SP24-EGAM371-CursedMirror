@@ -10,6 +10,7 @@ TagManager:
   - Lock
   - Bullet
   - Rope
+  - Water
   layers:
   - Default
   - TransparentFX

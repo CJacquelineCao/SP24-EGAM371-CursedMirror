@@ -100,13 +100,21 @@ public class GenericEnemy : MonoBehaviour
         Debug.DrawRay(transform.position, -transform.right * maxDistance, Color.green);
         if (hit)
         {
-            CountDownStarted = false;
-            Debug.Log("i see u");
-            SetState(AiState.Chase);
-            if (Player.GetComponent<PlayerController>().MirrorOut == true)
+            if(hit.transform.tag == "Player")
             {
-                gameObject.GetComponent<GenericEnemy>().SetState(GenericEnemy.AiState.Special);
+                CountDownStarted = false;
+                Debug.Log("i see u");
+                SetState(AiState.Chase);
+                if (Player.GetComponent<PlayerController>().MirrorOut == true)
+                {
+                    gameObject.GetComponent<GenericEnemy>().SetState(GenericEnemy.AiState.Special);
+                }
             }
+            else
+            {
+
+            }
+
 
 
         }

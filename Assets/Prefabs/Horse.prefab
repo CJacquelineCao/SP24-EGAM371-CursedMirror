@@ -158,7 +158,7 @@ MonoBehaviour:
   rb: {fileID: 4374192167018981813}
   playerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 768
   maxDistance: 5
   elapsedTime: 0
   maxTime: 5
