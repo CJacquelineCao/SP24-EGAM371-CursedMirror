@@ -27,6 +27,7 @@ public class Ugly : MonoBehaviour
             if(Player.GetComponent<PlayerController>().MirrorOut == true)
             {
                 Player.GetComponent<PlayerController>().MirrorBroke = true;
+                Player.GetComponent<PlayerController>().breakSound.Play();
             }            
 
 

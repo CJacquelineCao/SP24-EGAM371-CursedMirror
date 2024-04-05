@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     public float throwstrengthfactor;
 
     public bool canMove;
+    public Vector3 respawnLocation;
+    public AudioSource breakSound;
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +53,8 @@ public class PlayerController : MonoBehaviour
 
         // Disable the Line Renderer at the start
         aimLine.enabled = false;
+
+        respawnLocation = new Vector3(-45, -3, 0);
     }
 
     // Update is called once per frame
@@ -64,8 +68,9 @@ public class PlayerController : MonoBehaviour
  
         if (life < 1)
         {
-            Hearts[0].gameObject.SetActive(false);
             
+            Hearts[0].gameObject.SetActive(false);
+            respawn();
 
         }
         else if (life < 2)
@@ -272,5 +277,24 @@ public class PlayerController : MonoBehaviour
         float moveY = Input.GetAxisRaw("Vertical");
 
         movedirection = new Vector2(moveX, moveY).normalized;
+    }
+
+    public void setnewspawn(Vector3 pos)
+    {
+        respawnLocation = pos;
+        life = 3;
+        foreach (GameObject heart in Hearts)
+        {
+            heart.SetActive(true);
+        }
+    }
+     void respawn()
+    {
+        gameObject.transform.position = respawnLocation;
+        life = 3;
+        foreach (GameObject heart in Hearts)
+        {
+            heart.SetActive(true);
+        }
     }
 }

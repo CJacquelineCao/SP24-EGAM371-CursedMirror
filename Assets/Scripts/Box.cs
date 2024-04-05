@@ -12,7 +12,7 @@ public class Box : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 targetPosition;
     private bool isMoving = false;
-
+    public AudioSource pushSound;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -63,7 +63,7 @@ public class Box : MonoBehaviour
     IEnumerator MoveTowardsTarget(Vector2 target)
     {
         isMoving = true;
-
+        pushSound.Play();
         while (Vector2.Distance(transform.position, target) > 0.05f)
         {
             transform.position = Vector2.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
