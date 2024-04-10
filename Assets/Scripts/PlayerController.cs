@@ -45,6 +45,9 @@ public class PlayerController : MonoBehaviour
     public bool canMove;
     public Vector3 respawnLocation;
     public AudioSource breakSound;
+    public bool invincibilitycalled;
+    public bool isInvincible;
+    public Animator animationcontroller;
     // Start is called before the first frame update
     void Start()
     {
@@ -64,23 +67,6 @@ public class PlayerController : MonoBehaviour
         {
             Inputs();
             move();
-        }
- 
-        if (life < 1)
-        {
-            
-            Hearts[0].gameObject.SetActive(false);
-            respawn();
-
-        }
-        else if (life < 2)
-        {
-            Hearts[1].gameObject.SetActive(false);
-        }
-        else if (life < 3)
-        {
-            Hearts[2].gameObject.SetActive(false);
-
         }
  
         
@@ -106,17 +92,63 @@ public class PlayerController : MonoBehaviour
 
         if (collision.transform.tag == "Enemy")
         {
-            life -= collision.gameObject.GetComponent<GenericEnemy>().AttackPower;
+            TakeDmg(1);
         }
         else if(collision.transform.tag == "Bullet")
         {
-            life -= 1;
+            TakeDmg(1);
             Destroy(collision.gameObject); // Destroy the bullet on hitting the player
         }
 
     }
 
-    
+    public void TakeDmg(int dmg)
+    {
+        if (isInvincible == false)
+        {
+            life -= dmg;
+            if (life <= 0)
+            {
+                //gameover
+            }
+            else
+            {
+
+                for (int i = 0; i < Hearts.Length; i++)
+                {
+                    if (Hearts[i].activeSelf == true)
+                    {
+                        Hearts[i].gameObject.SetActive(false);
+                        break;
+                    }
+                }
+                if (invincibilitycalled == false)
+                {
+                    StartCoroutine(beInvincible());
+                }
+
+            }
+        }
+        else
+        {
+
+        }
+
+    }
+    IEnumerator beInvincible()
+    {
+        invincibilitycalled = true;
+        animationcontroller.SetBool("Hurt", true);
+        yield return new WaitForSeconds(.1f);
+        isInvincible = true;
+        gameObject.GetComponent<Collider2D>().enabled = false;
+        yield return new WaitForSeconds(2.15f);
+        isInvincible = false;
+        animationcontroller.SetBool("Hurt", false);
+        gameObject.GetComponent<Collider2D>().enabled = true;
+        invincibilitycalled = false;
+    }
+
     private void FixedUpdate()
     {
         if(MirrorBroke == false)

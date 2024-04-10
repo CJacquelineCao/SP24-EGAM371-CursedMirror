@@ -10,10 +10,12 @@ public class Rope : MonoBehaviour
     public float currenttime;
 
     public float burnspeed;
+    public AudioSource burnsound;
+    bool isburning;
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(CheckFunction());
     }
 
     // Update is called once per frame
@@ -49,22 +51,38 @@ public class Rope : MonoBehaviour
             
         }
     }
+    private IEnumerator CheckFunction()
+    {
+        yield return new WaitForSeconds(1f); // Adjust the time interval as needed
+        if (!isburning)
+        {
+            // If not active, stop the burn sound
+            burnsound.Stop();
+        }
+    }
 
     public void burn()
     {
         if (currenttime < maxtimeneeded)
         {
+
             lighttime += Time.deltaTime;
+
             if (lighttime >= burnspeed)
             {
-               currenttime += 0.5f;
+                currenttime += 0.5f;
                 lighttime = 0f;
-              
+                isburning = true; // Set isburning to true when burning
+
+                burnsound.Play();
+
             }
         }
+        else
+        {
+            isburning = false;
+            burnsound.Stop();
+        }
     }
-    public void stopburn()
-    {
-        currenttime = 0;
-    }
+
 }

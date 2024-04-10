@@ -13610,6 +13610,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flafoon
       objectReference: {fileID: 0}
+    - target: {fileID: 5361909427185133090, guid: cd195b585e437194c95f41b1be6f9c6b, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5361909427185133100, guid: cd195b585e437194c95f41b1be6f9c6b, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -17905,7 +17909,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -6.3108872e-30, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.23, y: -5.12, z: -10}
+  m_LocalPosition: {x: 12.34, y: 0.65, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18169,6 +18173,7 @@ GameObject:
   - component: {fileID: 633082930}
   - component: {fileID: 633082931}
   - component: {fileID: 633082932}
+  - component: {fileID: 633082933}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -18236,7 +18241,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633082926}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.23, y: -7.12, z: 0}
+  m_LocalPosition: {x: 12.34, y: -1.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -18289,6 +18294,9 @@ MonoBehaviour:
   canMove: 0
   respawnLocation: {x: 0, y: 0, z: 0}
   breakSound: {fileID: 633082932}
+  invincibilitycalled: 0
+  isInvincible: 0
+  animationcontroller: {fileID: 633082933}
 --- !u!50 &633082930
 Rigidbody2D:
   serializedVersion: 4
@@ -18432,6 +18440,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &633082933
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633082926}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 05068fcefc0402545ba06527526bd5e3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &660089283
 GameObject:
   m_ObjectHideFlags: 3
@@ -81002,7 +81030,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1845854036}
   m_LocalRotation: {x: -6.3108872e-30, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.23, y: -5.12, z: -10}
+  m_LocalPosition: {x: 12.34, y: 0.65, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
